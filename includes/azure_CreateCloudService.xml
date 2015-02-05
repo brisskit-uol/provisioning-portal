@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CreateHostedService xmlns="http://schemas.microsoft.com/windowsazure">
+  <ServiceName>i2b2</ServiceName>
+  <Label>aTJiMiBmcm9tIEJSSVNTS2l0</Label>
+  <Description>i2b2 from BRISSKit</Description>
+  <Location>North Europe</Location>
+</CreateHostedService>
