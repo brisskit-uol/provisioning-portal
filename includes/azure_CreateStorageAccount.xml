@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CreateStorageServiceInput xmlns="http://schemas.microsoft.com/windowsazure">
+	<ServiceName>i2b2-storage</ServiceName>
+	<Description>i2b2 storage for dev</Description>
+	<Label>aTJiMiBmcm9tIEJSSVNTS2l0</Label>
+	<Location>North Europe</Location>
+	<AccountType>Standard_LRS</AccountType>
+</CreateStorageServiceInput>

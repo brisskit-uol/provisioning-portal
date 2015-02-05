@@ -1,0 +1,43 @@
+<Deployment xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.microsoft.com/windowsazure">
+	<Name>i2b2</Name>
+	<DeploymentSlot>Production</DeploymentSlot>
+	<Label>i2b2</Label>
+	<RoleList>
+		<Role i:type="PersistentVMRole">
+			<RoleName>testi2b2</RoleName>
+			<OsVersion i:nil="true" />
+			<RoleType>PersistentVMRole</RoleType>
+			<ConfigurationSets>
+				<ConfigurationSet i:type="LinuxProvisioningConfigurationSet">
+					<ConfigurationSetType>LinuxProvisioningConfiguration</ConfigurationSetType>
+					<HostName>testi2b2</HostName>
+					<UserName>azure</UserName>
+					<UserPassword>Pa55word</UserPassword>
+					<DisableSshPasswordAuthentication>false</DisableSshPasswordAuthentication>
+					<CustomData>IyEvYmluL2Jhc2gNCnN1ZG8gbWtkaXIgLXAgL3Zhci9sb2NhbC9icmlzc2tpdC9pMmIyDQpjZCAvdmFyL2xvY2FsL2JyaXNza2l0L2kyYjINCnN1ZG8gd2dldCBodHRwOi8vd3d3Lmgyc3MuY28udWsvcS9pMmIycGcvZGJjbWRzLnppcA0Kc3VkbyB3Z2V0IGh0dHA6Ly93d3cuaDJzcy5jby51ay9xL2kyYjJwZy9pMmIyLTEuNy1pbnN0YWxsLXByb2NlZHVyZXMuemlwDQpzdWRvIGFwdC1nZXQgaW5zdGFsbCB1bnppcA0Kc3VkbyB1bnppcCBkYmNtZHMuemlwIC1kIGRiY21kcw0Kc3VkbyB1bnppcCBpMmIyLTEuNy1pbnN0YWxsLXByb2NlZHVyZXMuemlwDQpzdWRvIGFwdC1nZXQgLXkgaW5zdGFsbCBwb3N0Z3Jlc3FsIHBvc3RncmVzcWwtY29udHJpYiBwb3N0Z3Jlc3FsLWRvYw0Kc3VkbyBzdSAtIHBvc3RncmVzIC1jICdwc3FsIC1mIC92YXIvbG9jYWwvYnJpc3NraXQvaTJiMi9kYmNtZHMvc2V0dXBpMmIyZGIuY21kcycNCnN1ZG8gc2VkIC1pICdzL2kyYjItMS43LWluc3RhbGwtcHJvY2VkdXJlcy0xLjAtUkMxLWRldmVsb3BtZW50L2kyYjItMS43LWluc3RhbGwtcHJvY2VkdXJlcy9nJyAvdmFyL2xvY2FsL2JyaXNza2l0L2kyYjIvaTJiMi0xLjctaW5zdGFsbC1wcm9jZWR1cmVzL2Jpbi9nbG9iYWwvc2V0LnNoDQpzdWRvIHNlZCAtaSAnczovdmFyL3d3dy9pMmIyOi92YXIvd3d3L2h0bWwvaTJiMjpnJyAvdmFyL2xvY2FsL2JyaXNza2l0L2kyYjIvaTJiMi0xLjctaW5zdGFsbC1wcm9jZWR1cmVzL2NvbmZpZy9kZWZhdWx0cy5zaA0Kc291cmNlIC92YXIvbG9jYWwvYnJpc3NraXQvaTJiMi9pMmIyLTEuNy1pbnN0YWxsLXByb2NlZHVyZXMvYmluL2dsb2JhbC9zZXQuc2gNCnN1ZG8gLUUgL3Zhci9sb2NhbC9icmlzc2tpdC9pMmIyL2kyYjItMS43LWluc3RhbGwtcHJvY2VkdXJlcy9iaW4vaW5zdGFsbHMvMS1wcmVyZXF1aXNpdGVzLnNoIGZpcnN0DQpzdWRvIC1FIC92YXIvbG9jYWwvYnJpc3NraXQvaTJiMi9pMmIyLTEuNy1pbnN0YWxsLXByb2NlZHVyZXMvYmluL2luc3RhbGxzLzItYWNxdWlzaXRpb25zLnNoIGZpcnN0DQpzdWRvIC1FIC92YXIvbG9jYWwvYnJpc3NraXQvaTJiMi9pMmIyLTEuNy1pbnN0YWxsLXByb2NlZHVyZXMvYmluL2luc3RhbGxzLzMtaW5zdGFsbC1hbnQuc2ggZmlyc3QNCnN1ZG8gLUUgL3Zhci9sb2NhbC9icmlzc2tpdC9pMmIyL2kyYjItMS43LWluc3RhbGwtcHJvY2VkdXJlcy9iaW4vaW5zdGFsbHMvNC1pbnN0YWxsLWpkay5zaCBmaXJzdA0Kc3VkbyAtRSAvdmFyL2xvY2FsL2JyaXNza2l0L2kyYjIvaTJiMi0xLjctaW5zdGFsbC1wcm9jZWR1cmVzL2Jpbi9pbnN0YWxscy81LWluc3RhbGwtamJvc3Muc2ggZmlyc3QNCnN1ZG8gLUUgL3Zhci9sb2NhbC9icmlzc2tpdC9pMmIyL2kyYjItMS43LWluc3RhbGwtcHJvY2VkdXJlcy9iaW4vaW5zdGFsbHMvNi1kYXRhLWluc3RhbGwuc2ggZmlyc3QNCnN1ZG8gLUUgL3Zhci9sb2NhbC9icmlzc2tpdC9pMmIyL2kyYjItMS43LWluc3RhbGwtcHJvY2VkdXJlcy9iaW4vaW5zdGFsbHMvNy1wbS1pbnN0YWxsLnNoIGZpcnN0DQpzdWRvIC1FIC92YXIvbG9jYWwvYnJpc3NraXQvaTJiMi9pMmIyLTEuNy1pbnN0YWxsLXByb2NlZHVyZXMvYmluL2luc3RhbGxzLzgtd2ViY2xpZW50LWluc3RhbGwuc2ggZmlyc3QNCnN1ZG8gLUUgL3Zhci9sb2NhbC9icmlzc2tpdC9pMmIyL2kyYjItMS43LWluc3RhbGwtcHJvY2VkdXJlcy9iaW4vaW5zdGFsbHMvOS1vbnQtaW5zdGFsbC5zaCBmaXJzdA0Kc3VkbyAtRSAvdmFyL2xvY2FsL2JyaXNza2l0L2kyYjIvaTJiMi0xLjctaW5zdGFsbC1wcm9jZWR1cmVzL2Jpbi9pbnN0YWxscy9BLWNyYy1pbnN0YWxsLnNoIGZpcnN0DQpzdWRvIC1FIC92YXIvbG9jYWwvYnJpc3NraXQvaTJiMi9pMmIyLTEuNy1pbnN0YWxsLXByb2NlZHVyZXMvYmluL2luc3RhbGxzL0Itd29yay1pbnN0YWxsLnNoIGZpcnN0DQpzdWRvIC1FIC92YXIvbG9jYWwvYnJpc3NraXQvaTJiMi9pMmIyLTEuNy1pbnN0YWxsLXByb2NlZHVyZXMvYmluL2luc3RhbGxzL0MtZnItaW5zdGFsbC5zaCBmaXJzdA0Kc3VkbyAtRSAvdmFyL2xvY2FsL2JyaXNza2l0L2kyYjIvaTJiMi0xLjctaW5zdGFsbC1wcm9jZWR1cmVzL2Jpbi9pbnN0YWxscy9ELWltLWluc3RhbGwuc2ggZmlyc3Q=</CustomData>
+				</ConfigurationSet>
+				<ConfigurationSet i:type="NetworkConfigurationSet">
+					<ConfigurationSetType>NetworkConfiguration</ConfigurationSetType>
+					<InputEndpoints>
+						<InputEndpoint>
+							<LocalPort>22</LocalPort>
+							<Name>SSH</Name>
+							<Protocol>tcp</Protocol>
+						</InputEndpoint>
+						<InputEndpoint>
+							<LocalPort>80</LocalPort>
+							<Name>HTTP</Name>
+							<Port>80</Port>
+							<Protocol>tcp</Protocol>
+						</InputEndpoint>
+					</InputEndpoints>
+				</ConfigurationSet>
+			</ConfigurationSets>
+			<OSVirtualHardDisk>
+				<MediaLink>path-to-media</MediaLink>
+				<SourceImageName>b39f27a8b8c64d52b05eac6a62ebad85__Ubuntu-14_04_1-LTS-amd64-server-20141125-en-us-30GB</SourceImageName>
+			</OSVirtualHardDisk>
+			<RoleSize>Small</RoleSize>
+		</Role>
+	</RoleList>
+</Deployment>
