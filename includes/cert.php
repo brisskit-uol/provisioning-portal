@@ -1,9 +1,14 @@
 <?php
 
-if (!isset($_SESSION["custid"])) {
-	header('Location: setup.php');
+require_once 'main.php';
+
+$user = new User();
+
+if(!$user->loggedIn()){
+	redirect('index.php');
 }
 
+// Build array of CSR variables
 $dn = array(
 		"countryName" => "UK",
 		"stateOrProvinceName" => "Leicestershire",
@@ -14,20 +19,26 @@ $dn = array(
 		"emailAddress" => "i2b2@brisskit.org"
 	);
 
-	$privkey = openssl_pkey_new();
+// Generate private key
+$privkey = openssl_pkey_new();
 
-	$csr = openssl_csr_new($dn, $privkey);
+// Generate CSR
+$csr = openssl_csr_new($dn, $privkey);
 
-	$sscert = openssl_csr_sign($csr, null, $privkey, 365);
+// Sign CSR
+$sscert = openssl_csr_sign($csr, null, $privkey, 365);
 
-	if (!file_exists($_SESSION["custid"] . "-cert.pem")) {
-		openssl_x509_export_to_file($sscert, $_SESSION["custid"] . "-cert.cer");
-	}
-	
-	$link_to_cert = '<a href="' . htmlentities($_SESSION["custid"]) . '-cert.cer">Link to your certificate</a><br/><br/>';
-	
-	if (!file_exists($_SESSION["custid"] . "-key.pem")) {
-		openssl_pkey_export_to_file($privkey, $_SESSION["custid"] . "-key.pem");
-	}
+// Save certificate to disk if it does not already exist
+if (!file_exists($_SESSION["custid"] . "-cert.pem")) {
+	openssl_x509_export_to_file($sscert, $_SESSION["custid"] . "-cert.cer");
+}
+
+// Provide link to certificate
+$link_to_cert = '<a href="' . htmlentities($_SESSION["custid"]) . '-cert.cer">Link to your certificate</a><br/><br/>';
+
+// Save private key to disk if it does not already exist
+if (!file_exists("/tmp/azure-" . $_SESSION["custid"] . "-key.pem")) {
+	openssl_pkey_export_to_file($privkey, "/tmp/azure-" . $_SESSION["custid"] . "-key.pem");
+}
 
 ?>

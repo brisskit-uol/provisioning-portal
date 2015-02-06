@@ -8,22 +8,23 @@ if(!$user->loggedIn()){
 	redirect('index.php');
 }
 
- //taken from http://blogs.aws.amazon.com/php/post/TxMLFLE50WUAMR/Provision-an-Amazon-EC2-Instance-with-PHP
+// Taken from http://blogs.aws.amazon.com/php/post/TxMLFLE50WUAMR/Provision-an-Amazon-EC2-Instance-with-PHP
 
 require 'aws-sdk-php/vendor/autoload.php';
  
 use Aws\Ec2\Ec2Client;
  
-// Get instance type and creds
+// Get instance type and credentials
 $awstype = $_POST['awstype'];
 $awsaccessid = $_POST["awsaccessid"];
 $awssecretkey = $_POST["awssecretkey"];
 
-if ($awstype == "1") {
+
+if ($awstype == "1") { // if BRISSKit hosted use role credentials
 	$ec2Client = Ec2Client::factory(array(
 		'region' => 'eu-west-1', // (e.g., us-east-1)
 	));
-} else if ($awstype == "2") {
+} else if ($awstype == "2") { // if selft hosted do credential validation
 	if (strlen($awsaccessid) != 20) {
 		die('Credential error! 1');
 	}
@@ -42,8 +43,8 @@ if ($awstype == "1") {
 
 	$ec2Client = Ec2Client::factory(array(
 		'region' => 'eu-west-1', // (e.g., us-east-1)
-		'key'    => $awsaccessid,
-		'secret' => $awssecretkey,
+		'key'    => $awsaccessid, // use provided AWS access ID
+		'secret' => $awssecretkey, // use provided AWS secret key
 	));
 } else {
 	die('Error');
@@ -67,7 +68,7 @@ chmod($saveKeyLocation, 0600);
 $securityGroupName = 'security-group-' . $custid;
 $result = $ec2Client->createSecurityGroup(array(
     'GroupName'   => $securityGroupName,
-    'Description' => 'Basic web server security'
+    'Description' => 'i2b2 security rules'
 ));
  
 // Get the security group ID (optional)
@@ -82,29 +83,28 @@ $ec2Client->authorizeSecurityGroupIngress(array(
     'IpPermissions' => array(
         array(
             'IpProtocol' => 'tcp',
-            'FromPort'   => 80,
+            'FromPort'   => 80, // allow HTTP traffic
             'ToPort'     => 80,
             'IpRanges'   => array(
-                array('CidrIp' => $ipaddress),
+                array('CidrIp' => $ipaddress), // restrict to user's IP address
             ),
         ),
         array(
             'IpProtocol' => 'tcp',
-            'FromPort'   => 22,
+            'FromPort'   => 22, // allow SSH traffic
             'ToPort'     => 22,
             'IpRanges'   => array(
-                array('CidrIp' => '212.159.100.127/32'),
+                array('CidrIp' => '212.159.100.127/32'), // restrict to dev IP address
             ),
         )
     )
 ));
 
-// Get the userdata into a string
+// Get user's email address to inject into portal
 
-$installscript = file_get_contents('i2b2install.sh');
-
-//$portaluser = $_POST['portaluser'];
 $portaluser = $user->email;
+
+// Validate user email
 
 if (strlen($portaluser) < 1) {
 	die('Credential error! 5');
@@ -121,8 +121,7 @@ for( $i = 0; $i < 10; $i++ ) {
 	$portalpass .= $chars[ rand( 0, (strlen($chars)) - 1 ) ];
 }
 
-//$portalpass = $_POST['portalpass'];
-
+// Validate password
 if (strlen($portalpass) < 10) {
 	die('Credential error! 7');
 }
@@ -131,28 +130,32 @@ if (!preg_match('|^[A-Za-z0-9]+$|', $portalpass)) {
 	die('Credential error! 8');
 }
 
+// Hash password using bcrypt
 $portalpasshash = password_hash($portalpass, PASSWORD_BCRYPT);
+
+// Replace hash identifier as Java Spring not updated to include new PHP identifier
+// See http://php.net/security/crypt_blowfish.php for more details
 $portalpasshash = str_replace('$2y$', '$2a$', $portalpasshash);
 
+// Build up SQL statement with copious amounts of escaping
 $pgsqlcmd = 'psql -d i2b2 -c "INSERT INTO i2b2portal.users(username,password,enabled) VALUES (\'%portaluser%\', \'%portalpasshash%\', true); INSERT INTO i2b2portal.user_roles(username, role) VALUES (\'%portaluser%\',\'ROLE_USER\');"';
 $pgsqlcmd = strtr($pgsqlcmd, array('%portaluser%' => addslashes($portaluser), '%portalpasshash%' => addslashes($portalpasshash)));
 $pgsqlcmd = str_replace('$', '\$', escapeshellarg($pgsqlcmd));
 $pgsqlcmd = strtr('sudo su - postgres -c %pgsqlcmd%', array('%pgsqlcmd%' => $pgsqlcmd));
 
-//$portalsqlcommand = "sudo su - postgres -c 'psql -d i2b2 -c \"INSERT INTO i2b2portal.users(username,password,enabled) VALUES ('\"'" . $portaluser . "','" . escapeshellcmd($portalpasshash) . "', true);\"'\"'";
-
+// Use PHP to send an email once instance is build via command line
 $emailSuccess = "php /var/local/brisskit/i2b2/sendEmail.php " . $user->email . " " . $portalpass;
 
+// Get the userdata into a string
+$installscript = file_get_contents('i2b2install.sh');
+
+// Combine install script with SQL statement and email for command line processing
 $installer = implode(PHP_EOL, array($installscript, $pgsqlcmd, $emailSuccess));
 
-//die($installer);
-
+// Encode complete installer script in base64 as required by AWS
 $userdata = base64_encode($installer);
 
-//echo "Hash: " . $portalpasshash . "</br>";
-//echo "Data: " . $userdata . "</br>";
-
-// Launch an instance with the key pair and security group
+// Launch an instance with the key pair, security group and install script
 $result = $ec2Client->runInstances(array(
     'ImageId'        => 'ami-f0b11187',
     'MinCount'       => 1,
@@ -163,6 +166,7 @@ $result = $ec2Client->runInstances(array(
     'UserData'       => $userdata,
 ));
 
+// Get the instance ID
 $instanceIds = $result->getPath('Instances/*/InstanceId');
 
 // Tag our new instance for easy identification
@@ -189,10 +193,13 @@ $result = $ec2Client->describeInstances(array(
 
 $ec2url = current($result->getPath('Reservations/*/Instances/*/PublicDnsName'));
 
+// Store the public URL in the database
 $user->storeURL($ec2url);
 
+// Return the link to the instance
 echo 'In around 20 minutes, i2b2 will be available here <a href="http://' . $ec2url . '/i2b2UploaderWebapp">http://' . $ec2url . '/i2b2UploaderWebapp</a><br><br>We\'ll send you an email when it\'s ready!<br><br>';
 
+// Post a message to Slack
 $message = "A new i2b2 instance has been generated by *". $user->email . "* at <http://" . $ec2url . "/i2b2UploaderWebapp|" . $ec2url . ">";
 
 // Array of data posted Slack
