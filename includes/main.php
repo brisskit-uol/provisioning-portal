@@ -43,7 +43,7 @@ session_start();
 // Some hosting providers block outgoing email if this address
 // is not registered as a real email account on their system, so put a real one here.
 
-$fromEmail = '';
+$fromEmail = 'i2b2@brisskit.org';
 
 if(!$fromEmail){
 	// This is only used if you haven't filled an email address in $fromEmail
