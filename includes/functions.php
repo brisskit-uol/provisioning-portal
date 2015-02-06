@@ -8,7 +8,7 @@ function send_email($from, $to, $subject, $message){
 	$headers .= 'Content-type: text/plain; charset=utf-8' . "\r\n";
 	$headers .= 'From: '.$from . "\r\n";
 
-	return mail($to, $subject, $message, $headers);
+	return mail($to, $subject, $message, $headers, '-f'.$from);
 }
 
 function get_page_url(){
