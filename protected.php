@@ -11,11 +11,11 @@ if(!$user->loggedIn()){
 	redirect('index.php');
 }
 
-//$_SESSION["custid"] = $user->custid;
-
+// Include SSL certificate generation for use with Azure API
 include("cert.php");
 
-$isurlnull = $user->instance_url;
+// Check to see if user already has an instance URL
+$instanceurl = $user->instance_url;
 
 ?>
 
@@ -35,7 +35,7 @@ $isurlnull = $user->instance_url;
 	</head>
 
 	<body>
-<?php if (empty($isurlnull)): ?>
+<?php if (empty($instanceurl)): // if user doesn't have an instance URL present generation page?>
 		<div id="protected-page">
 			<img src="assets/img/lock.jpg" alt="Lock" />
 			<h1>Welcome to Public Cloud i2b2</h1>
@@ -132,14 +132,14 @@ $(document).ready(function() {
 	});
 });
 </script>
-<?php else: ?>
+<?php else: // if user already has an instance URL display last known URL ?>
 		<div id="protected-page">
 			<img src="assets/img/lock.jpg" alt="Lock" />
 			<h1>Public Cloud i2b2</h1>
 
 			<p>You already have an i2b2 instance!</p>
 			<p>It was last seen here:</p>
-			<div id="i2b2url"><p><a href="http://<?php echo $isurlnull; ?>/i2b2UploaderWebapp">http://<?php echo $isurlnull; ?>/i2b2UploaderWebapp</a></p></div>
+			<div id="i2b2url"><p><a href="http://<?php echo $instanceurl; ?>/i2b2UploaderWebapp">http://<?php echo $instanceurl; ?>/i2b2UploaderWebapp</a></p></div>
 			<a href="index.php?logout=1" class="logout-button">Logout</a>
 		</div>
 <?php endif; ?>

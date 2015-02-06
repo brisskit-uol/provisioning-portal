@@ -8,28 +8,30 @@ if(!$user->loggedIn()){
 	redirect('index.php');
 }
 
+// If provisioning on user's account subscription ID is a required field
 if (empty($_POST['azuresubid']) && $_POST['azuretype'] == '2') {
 	die("Subscription ID cannot be left blank");
 }
 
+// Validate subscription id based on format aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
 if (!preg_match('|^[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}$|', $_POST['azuresubid']) && $_POST['azuretype'] == '2') {
 	die('Credential error! 2');
 }
-die("ID: " . $_POST['azuresubid']);
+
+// Use BRISSKit credentials if customer does not provide their own
 $azuresubid = (empty($_POST['azuresubid']) ? '67c600b2-92f0-4c26-9116-e0f76b409f63' : $_POST['azuresubid']);
-
-$certpath = (empty($_POST['azuresubid']) ? '/etc/ssl/certs/mycert.pem' : __DIR__ . '/' . $_SESSION['custid'] . '-cert.cer');
-
-$keypath = (empty($_POST['azuresubid']) ? '/etc/ssl/certs/mycert.pem' : __DIR__ . '/' . $_SESSION['custid'] . '-key.pem');
+$certpath = (empty($_POST['azuresubid']) ? '/etc/ssl/certs/mycert.pem' : __DIR__ . '/' . $custid . '-cert.cer');
+$keypath = (empty($_POST['azuresubid']) ? '/etc/ssl/certs/mycert.pem' : '/tmp/azure-' . $custid . '-key.pem');
 
 require_once "guzzle5/vendor/autoload.php";
 
 use GuzzleHttp\Client;
 
+// Build a guzzle client
 $client = new Client([
     'base_url' => ['https://management.core.windows.net/{subscription}/', ['subscription' => $azuresubid]],
     'defaults' => [
-		'headers' 	=> ['x-ms-version' => '2014-06-01',
+		'headers' 	=> ['x-ms-version' => '2014-06-01', // specify version of API to use
 						'Content-Type' => 'application/xml',
 		],
 		'cert'		=> $certpath,
@@ -39,6 +41,7 @@ $client = new Client([
 
 try {
 
+	// Create Azure Cloud Service
     $CreateCloudXML = simplexml_load_file('azure_CreateCloudService.xml');
     $CreateCloudXML->ServiceName = 'i2b2dev' . $_SESSION["custid"];
     $CreateCloudXML = $CreateCloudXML->asXML();
@@ -46,8 +49,8 @@ try {
 
     $requestIDCreateCloud = $responseCreateCloud->getHeader('x-ms-request-id');
     
+    // wait for success
     $successCreateCloud = "";
-    
     while ($successCreateCloud != "Succeeded") {
 		//echo "Waiting to CreateCloud\r\n";
 		$responseStatusCreateCloud = $client->get('operations/' . $requestIDCreateCloud);
@@ -56,6 +59,7 @@ try {
 		sleep(2);
     }
     
+    // Create Azure Storage Account
     $CreateStorageAccountXML = simplexml_load_file('azure_CreateStorageAccount.xml');
     $CreateStorageAccountXML->ServiceName = 'i2b2dev' . $_SESSION["custid"];
     $CreateStorageAccountXML = $CreateStorageAccountXML->asXML();
@@ -63,8 +67,8 @@ try {
     
     $requestIDCreateStorageAccount = $responseCreateStorageAccount->getHeader('x-ms-request-id');
     
+    // wait for success
     $successCreateStorageAccount = "";
-    
     while ($successCreateStorageAccount != "Succeeded") {
 		//echo "Waiting to CreateStorageAccount\r\n";
 		$responseStatusCreateStorageAccount = $client->get('operations/' . $requestIDCreateStorageAccount);
@@ -79,6 +83,7 @@ try {
 		$portalpass .= $chars[ rand( 0, (strlen($chars)) - 1 ) ];
 	}
 
+	// Validate password
 	if (strlen($portalpass) < 10) {
 		die('Credential error! 7');
 	}
@@ -87,20 +92,32 @@ try {
 		die('Credential error! 8');
 	}
 
+	// Hash password using bcrypt
 	$portalpasshash = password_hash($portalpass, PASSWORD_BCRYPT);
+	
+	// Replace hash identifier as Java Spring not updated to include new PHP identifier
+	// See http://php.net/security/crypt_blowfish.php for more details
 	$portalpasshash = str_replace('$2y$', '$2a$', $portalpasshash);
-
+	
+	// Build up SQL statement with copious amounts of escaping
 	$pgsqlcmd = 'psql -d i2b2 -c "INSERT INTO i2b2portal.users(username,password,enabled) VALUES (\'%portaluser%\', \'%portalpasshash%\', true); INSERT INTO i2b2portal.user_roles(username, role) VALUES (\'%portaluser%\',\'ROLE_USER\');"';
 	$pgsqlcmd = strtr($pgsqlcmd, array('%portaluser%' => addslashes($portaluser), '%portalpasshash%' => addslashes($portalpasshash)));
 	$pgsqlcmd = str_replace('$', '\$', escapeshellarg($pgsqlcmd));
 	$pgsqlcmd = strtr('sudo su - postgres -c %pgsqlcmd%', array('%pgsqlcmd%' => $pgsqlcmd));
 
+	// Use PHP to send an email once instance is build via command line
 	$emailSuccess = "php /var/local/brisskit/i2b2/sendEmail.php " . $user->email . " " . $portalpass;
+	
+	// Get the userdata into a string
+	$installscript = file_get_contents('i2b2install.sh');
 
+	// Combine install script with SQL statement and email for command line processing
 	$installer = implode(PHP_EOL, array($installscript, $pgsqlcmd, $emailSuccess));
 
+	// Encode complete installer script in base64 as required by Azure
 	$userdata = base64_encode($installer);
 	
+	// Create Azure VM Deployment
     $CreateVMDeploymentXML = simplexml_load_file('azure_CreateVMDeployment.xml');
     $CreateVMDeploymentXML->RoleList->Role->RoleName = 'i2b2dev' . $_SESSION["custid"];
     $CreateVMDeploymentXML->RoleList->Role->ConfigurationSets->ConfigurationSet[0]->HostName = 'i2b2dev' . $_SESSION["custid"];
@@ -111,8 +128,8 @@ try {
     
     $requestIDCreateVMDeployment = $responseCreateVMDeployment->getHeader('x-ms-request-id');
     
+    // wait for success
     $successCreateVMDeployment = "";
-    
     while ($successCreateVMDeployment != "Succeeded") {
 		//echo "Waiting to CreateVMDeployment\r\n";
 		$responseStatusCreateVMDeployment = $client->get('operations/' . $requestIDCreateVMDeployment);
