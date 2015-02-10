@@ -139,7 +139,7 @@ $(document).ready(function() {
 
 			<p>You already have an i2b2 instance!</p>
 			<p>It was last seen here:</p>
-			<div id="i2b2url"><p><a href="http://<?php echo $instanceurl; ?>/i2b2UploaderWebapp">http://<?php echo $instanceurl; ?>/i2b2UploaderWebapp</a></p></div>
+			<div id="i2b2url"><p><a href="http://<?php echo $instanceurl; ?>/i2b2UploaderWebapp" target="_blank">http://<?php echo $instanceurl; ?>/i2b2UploaderWebapp</a></p></div>
 			<a href="index.php?logout=1" class="logout-button">Logout</a>
 		</div>
 <?php endif; ?>
