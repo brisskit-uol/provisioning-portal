@@ -16,15 +16,15 @@ sudo service mysqld start```
 5. Make httpd and mysqld start on boot
 ```sudo chkconfig httpd on
 sudo chkconfig mysqld on```
-5. Create database in MySQL
+6. Create database in MySQL
 ```create database if not exists login;```
-6. Create tables in database using commands in `tables.sql`
-7. Create user and grant permissions on database
+7. Create tables in database using commands in `tables.sql`
+8. Create user and grant permissions on database
 ```CREATE USER 'newuser'@'localhost' IDENTIFIED BY 'password';
 GRANT ALL PRIVILEGES ON databasename . * TO 'newuser'@'localhost';```
-8. Upload code to instance `/var/www/html/`
-9. Modify database details in `includes/main.php`
-10. PROFIT!
+9. Upload code to instance `/var/www/html/`
+10. Modify database details in `includes/main.php`
+11. PROFIT!
 
 ### Notes ###
 
