@@ -1,4 +1,7 @@
 #!/bin/bash
+
+exec >> /tmp/install-$(date +"%F-%H%M%S").log 2>&1
+
 sudo mkdir -p /var/local/brisskit/i2b2
 cd /var/local/brisskit/i2b2
 sudo wget http://www.h2ss.co.uk/q/i2b2pg/dbcmds.zip
@@ -78,4 +81,3 @@ sudo a2enmod proxy_http
 sed -i '/DocumentRoot \/var\/www\/html/a \\n\tProxyPass /i2b2UploaderWebapp http://localhost:9090/i2b2UploaderWebapp\n\tProxyPassReverse /i2b2UploaderWebapp http://localhost:9090/i2b2UploaderWebapp' /etc/apache2/sites-available/000-default.conf
 sudo service apache2 restart
 echo "sudo shutdown -h now" | at now + 60 minutes
-
