@@ -53,6 +53,7 @@ if(!$mail->send()) {
 
 ?>
 EOL
+sudo apt-get update
 sudo apt-get install unzip
 sudo unzip dbcmds.zip -d dbcmds
 sudo unzip i2b2-1.7-install-procedures.zip
