@@ -57,7 +57,7 @@ $instanceurl = $user->instance_url;
 			<div class="clearboth">&nbsp;</div>
 			<div id="platform1" class="platformtext" style="display: none">
 				<input type="radio" name="awstype" value="1" checked>I don't have an AWS account<br>
-				<input type="radio" name="awstype" value="2">I have my own AWS account<br>
+				<input type="radio" name="awstype" value="2">I have my own AWS account <a href="awshelp.php" target="_blank">help</a><br>
 			</div>
 			<div id="platform2" class="platformtext" style="display: none">
 				<input type="radio" name="azuretype" value="1" checked>I don't have an Azure account<br>
