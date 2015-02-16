@@ -15,7 +15,7 @@
 
 
 html{
-	background:url('../img/bg.jpg') #3F7EF2 no-repeat center center fixed;
+	background:url('../img/bg.jpg') #7A93CB no-repeat center center fixed;
 	min-height:100%;
 	background-size:cover;
 }
@@ -156,6 +156,8 @@ section, footer, header, aside{
 
 #protected-page p{
 	line-height: 1.5;
+	padding-left: 40px;
+	padding-right: 40px;
 }
 
 #protected-page a{
@@ -164,10 +166,10 @@ section, footer, header, aside{
 
 	display:inline-block;
 	padding:10px 30px;
-	margin-top:50px;
+	margin:20px 0px 40px;
 	text-decoration: none !important;
 	color:#fff !important;
-	background-color:#b9b9e2;
+	background-color:#5D7EB1;
 	
 	font-weight:bold;
 	font-size:16px;
@@ -177,9 +179,16 @@ section, footer, header, aside{
 }
 
 #protected-page a:hover{
-	background-color:#c3c3ea;
+	background-color:#77A3E7;
 }
 
+#protected-page .imglink{
+	line-height: 0;
+	background-color:transparent;
+	padding:0px;
+	border-radius:0px;
+	border-bottom:0px;
+}
 
 /*----------------------------
 	The Demo Footer

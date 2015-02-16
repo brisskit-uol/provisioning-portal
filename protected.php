@@ -37,7 +37,7 @@ $instanceurl = $user->instance_url;
 	<body>
 <?php if (empty($instanceurl)): // if user doesn't have an instance URL present generation page?>
 		<div id="protected-page">
-			<img src="assets/img/lock.jpg" alt="Lock" />
+			<img src="assets/img/brisskit-logo.jpg" alt="Lock" />
 			<h1>Welcome to Public Cloud i2b2</h1>
 
 			<!-- <p>Please create details for your i2b2 portal:</p>
@@ -134,7 +134,7 @@ $(document).ready(function() {
 </script>
 <?php else: // if user already has an instance URL display last known URL ?>
 		<div id="protected-page">
-			<img src="assets/img/lock.jpg" alt="Lock" />
+			<img src="assets/img/brisskit-logo.jpg" alt="Lock" />
 			<h1>Public Cloud i2b2</h1>
 
 			<p>You already have an i2b2 instance!</p>
