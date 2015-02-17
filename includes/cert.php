@@ -1,12 +1,15 @@
 <?php
 
-require_once 'main.php';
+require_once 'includes/main.php';
 
 $user = new User();
 
 if(!$user->loggedIn()){
 	redirect('index.php');
 }
+
+// Get customer ID
+$custid = $user->custid;
 
 // Build array of CSR variables
 $dn = array(
@@ -29,16 +32,16 @@ $csr = openssl_csr_new($dn, $privkey);
 $sscert = openssl_csr_sign($csr, null, $privkey, 365);
 
 // Save certificate to disk if it does not already exist
-if (!file_exists($_SESSION["custid"] . "-cert.pem")) {
-	openssl_x509_export_to_file($sscert, $_SESSION["custid"] . "-cert.cer");
+if (!file_exists("azure-" . $custid . "-cert.cer")) {
+	openssl_x509_export_to_file($sscert, "azure-" . $custid . "-cert.cer");
 }
 
 // Provide link to certificate
-$link_to_cert = '<a href="' . htmlentities($_SESSION["custid"]) . '-cert.cer">Link to your certificate</a><br/><br/>';
+$link_to_cert = '<a href="azure-' . htmlentities($custid) . '-cert.cer">Link to your certificate</a><br/><br/>';
 
 // Save private key to disk if it does not already exist
-if (!file_exists("/tmp/azure-" . $_SESSION["custid"] . "-key.pem")) {
-	openssl_pkey_export_to_file($privkey, "/tmp/azure-" . $_SESSION["custid"] . "-key.pem");
+if (!file_exists("/tmp/azure-" . $custid . "-key.pem")) {
+	openssl_pkey_export_to_file($privkey, "/tmp/azure-" . $custid . "-key.pem");
 }
 
 ?>

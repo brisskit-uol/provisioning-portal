@@ -12,7 +12,7 @@ if(!$user->loggedIn()){
 }
 
 // Include SSL certificate generation for use with Azure API
-include("cert.php");
+include 'includes/cert.php';
 
 // Check to see if user already has an instance URL
 $instanceurl = $user->instance_url;
