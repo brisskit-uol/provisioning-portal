@@ -2,6 +2,7 @@
 
 exec >> /tmp/install-$(date +"%F-%H%M%S").log 2>&1
 
+update-locale LANG=en_GB.UTF-8
 sudo mkdir -p /var/local/brisskit/i2b2
 cd /var/local/brisskit/i2b2
 sudo wget http://www.h2ss.co.uk/q/i2b2pg/dbcmds.zip
@@ -58,6 +59,8 @@ sudo apt-get install unzip
 sudo unzip dbcmds.zip -d dbcmds
 sudo unzip i2b2-1.7-install-procedures.zip
 sudo apt-get -y install postgresql postgresql-contrib postgresql-doc
+sudo sed -i 's:#synchronous_commit = on:synchronous_commit = off:g' /etc/postgresql/9.3/main/postgresql.conf
+sudo service postgresql restart
 sudo su - postgres -c 'psql -f /var/local/brisskit/i2b2/dbcmds/setupi2b2db.cmds'
 sudo sed -i 's/i2b2-1.7-install-procedures-1.0-RC1-development/i2b2-1.7-install-procedures/g' /var/local/brisskit/i2b2/i2b2-1.7-install-procedures/bin/global/set.sh
 sudo sed -i 's:/var/www/i2b2:/var/www/html/i2b2:g' /var/local/brisskit/i2b2/i2b2-1.7-install-procedures/config/defaults.sh
@@ -76,9 +79,9 @@ sudo -E /var/local/brisskit/i2b2/i2b2-1.7-install-procedures/bin/installs/B-work
 sudo -E /var/local/brisskit/i2b2/i2b2-1.7-install-procedures/bin/installs/C-fr-install.sh first
 sudo -E /var/local/brisskit/i2b2/i2b2-1.7-install-procedures/bin/installs/D-im-install.sh first
 sudo unzip webclient_brisskit.zip -d /var/www/html/i2b2/
-mv /var/local/brisskit/i2b2/i2b2UploaderWebapp.war /var/local/brisskit/i2b2/jboss/standalone/deployments/
+sudo mv /var/local/brisskit/i2b2/i2b2UploaderWebapp.war /var/local/brisskit/i2b2/jboss/standalone/deployments/
 sudo a2enmod proxy
 sudo a2enmod proxy_http
-sed -i '/DocumentRoot \/var\/www\/html/a \\n\tProxyPass /i2b2UploaderWebapp http://localhost:9090/i2b2UploaderWebapp\n\tProxyPassReverse /i2b2UploaderWebapp http://localhost:9090/i2b2UploaderWebapp' /etc/apache2/sites-available/000-default.conf
+sudo sed -i '/DocumentRoot \/var\/www\/html/a \\n\tProxyPass /i2b2UploaderWebapp http://localhost:9090/i2b2UploaderWebapp\n\tProxyPassReverse /i2b2UploaderWebapp http://localhost:9090/i2b2UploaderWebapp' /etc/apache2/sites-available/000-default.conf
 sudo service apache2 restart
-echo "sudo shutdown -h now" | at now + 60 minutes
+sudo echo "sudo shutdown -h now" | at now + 60 minutes
